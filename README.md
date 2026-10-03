@@ -39,6 +39,9 @@ service cloud.firestore {
   match /databases/{database}/documents {
     match /usuarios/{uid} {
       allow read, write: if request.auth != null && request.auth.uid == uid;
+      match /{documento=**} {
+        allow read, write: if request.auth != null && request.auth.uid == uid;
+      }
     }
   }
 }
@@ -48,6 +51,8 @@ service cloud.firestore {
    Publicado ese archivo, nadie pega configuración: solo entran con su correo.
 
 Las claves de `firebaseConfig` no son secretas; la protección son las reglas del paso 3.
+
+Cada grupo se guarda como documento propio en `usuarios/{uid}/grupos/{id}` y los cambios se reciben en vivo entre dispositivos de la misma cuenta. Las cuentas que venían del formato anterior (un solo documento) se migran solas la primera vez que entran.
 
 ## Respaldo en archivo
 
