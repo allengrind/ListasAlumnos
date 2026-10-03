@@ -1,4 +1,4 @@
-const CACHE = "registro-ingles-v7";
+const CACHE = "registro-ingles-v8";
 const ASSETS = ["./", "./index.html", "./manifest.webmanifest", "./icon-180.png", "./icon-192.png", "./icon-512.png", "./icon-512-maskable.png", "./favicon-64.png"];
 
 self.addEventListener("install", e => {
