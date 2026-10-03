@@ -13,6 +13,7 @@ Funciona sin conexión y, si lo configuras, sincroniza con tu propio Firebase.
    - `sw.js`
    - `manifest.webmanifest`
    - `icon-180.png`, `icon-192.png`, `icon-512.png`
+   - `firebase-config.json` (con tus valores)
 3. En **Settings → Pages**, elige *Deploy from a branch*, rama `main`, carpeta `/ (root)`. Guarda.
 4. En un minuto queda en `https://TU-USUARIO.github.io/TU-REPO/`.
 
@@ -23,30 +24,30 @@ Funciona sin conexión y, si lo configuras, sincroniza con tu propio Firebase.
 
 Una vez instalada abre sin señal: el service worker guarda la app en el dispositivo.
 
-## Sincronización (opcional)
+## Cuentas y sincronización
 
-1. En [console.firebase.google.com](https://console.firebase.google.com) crea un proyecto.
-2. Agrega una **app web** y copia el objeto `firebaseConfig`.
-3. Crea una base **Firestore** en modo producción.
-4. En Reglas, pega esto y publica — sustituye el nombre del espacio por el tuyo:
+Cada maestro entra con su correo y solo ve sus propios grupos. Pasos completos en la guía de Firebase.
+
+1. En [console.firebase.google.com](https://console.firebase.google.com) crea un proyecto y una **app web**; copia `firebaseConfig`.
+2. **Authentication → Método de acceso:** activa *Correo electrónico/contraseña*.
+   Para registro cerrado, da de alta a cada maestro en *Usuarios* y desmarca *Habilitar creación* en *Configuración → Acciones del usuario*.
+3. **Firestore Database** en modo producción, con estas reglas:
 
 ```
 rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
-    match /registros/{espacio} {
-      allow read, write: if espacio == 'ingles-primaria-2026-x7k2';
+    match /usuarios/{uid} {
+      allow read, write: if request.auth != null && request.auth.uid == uid;
     }
   }
 }
 ```
 
-5. En la app: **Ajustes → Sincronización en la nube**, pega la configuración, escribe el mismo
-   nombre de espacio y toca **Conectar**. Activa *Sincronizar sola* para que suba tras cada cambio.
+4. Edita `firebase-config.json` con tus valores (o descárgalo desde la app en *Ajustes → Cuenta y sincronización*).
+   Publicado ese archivo, nadie pega configuración: solo entran con su correo.
 
-El nombre del espacio es la única llave: quien lo conozca puede leer y escribir esos datos.
-Usa uno largo y no lo compartas. Si más adelante entran varios maestros, conviene cambiar a
-cuentas con Firebase Authentication.
+Las claves de `firebaseConfig` no son secretas; la protección son las reglas del paso 3.
 
 ## Respaldo en archivo
 
