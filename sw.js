@@ -1,4 +1,4 @@
-const CACHE = "registro-ingles-v5";
+const CACHE = "registro-ingles-v6";
 const ASSETS = ["./", "./index.html", "./manifest.webmanifest", "./icon-180.png", "./icon-192.png", "./icon-512.png", "./icon-512-maskable.png", "./favicon-64.png"];
 
 self.addEventListener("install", e => {
@@ -12,7 +12,8 @@ self.addEventListener("fetch", e => {
   if (req.method !== "GET") return;
   const url = new URL(req.url);
   if (url.origin !== location.origin) return;            // Firebase y CDNs van directo a la red
-  if (req.mode === "navigate") {
+  if (req.mode === "navigate" || url.pathname.endsWith(".json")) {
+    if (url.pathname.endsWith(".json")) { e.respondWith(fetch(req).catch(() => caches.match(req))); return; }
     e.respondWith(fetch(req).catch(() => caches.match("./index.html")));
     return;
   }
